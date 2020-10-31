@@ -17,7 +17,7 @@ runApp() {
   killall dlv
   killall app
   log "Run in debug mode"
-  dlv --log --listen=:40000 --headless=true --api-version=2 --accept-multiclient exec /app "$@" &
+  dlv --log --listen=:40000 --headless=true --api-version=2 --accept-multiclient exec /app -- "$@" &
 }
 
 rerunApp() {
