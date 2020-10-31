@@ -4,30 +4,31 @@ log() {
   echo "STARTSCRIPT: $1"
 }
 
-buildServer() {
-  log "Building server binary"
-  go build -gcflags "all=-N -l" -o /server main.go
+buildApp() {
+  log "Building app binary"
+  chmod +x /build/build.sh
+  /build/build.sh
 }
 
-runServer() {
-  log "Run server"
+runApp() {
+  log "Run app"
 
-  log "Killing old server"
+  log "Killing old app"
   killall dlv
-  killall server
+  killall app
   log "Run in debug mode"
-  dlv --listen=:40000 --headless=true --api-version=2 --accept-multiclient exec /server &
+  dlv --log --listen=:40000 --headless=true --api-version=2 --accept-multiclient exec /app "$@" &
 }
 
-rerunServer() {
-  log "Rerun server"
-  buildServer
-  runServer
+rerunApp() {
+  log "Rerun app"
+  buildApp
+  runApp "$@"
 }
 
 liveReloading() {
   log "Run liveReloading"
-  inotifywait -e "MODIFY,DELETE,MOVED_TO,MOVED_FROM" -m -r --include '.go$' /build | (
+  inotifywait -e "MODIFY,DELETE,MOVED_TO,MOVED_FROM" -m -r /build | (
     # read changes from inotify, batch results to a second (read -t 1)
     while true; do
       read path action file
@@ -56,7 +57,7 @@ liveReloading() {
     while true; do
       read TMP
       log "File Changed. Reloading..."
-      rerunServer
+      rerunApp "$@"
     done
   )
 }
@@ -68,9 +69,10 @@ initializeFileChangeLogger() {
 
 main() {
   initializeFileChangeLogger
-  buildServer
-  runServer
-  liveReloading
+  buildApp
+  runApp "$@"
+  liveReloading "$@"
 }
 
-main
+echo "$@"
+main "$@"

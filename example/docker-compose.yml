@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  godebug_example:
+    image: aligator/godebug:latest
+    ports:
+      # Port for the debugger.
+      - 40000:40000
+      # The port to expose for the app (optional).
+      - 8080:8080
+    volumes:
+      # Mount the app source
+      - .:/build
+
+    # Needed for debugging in Docker.
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+
+    # Example for passing arguments to the app:
+    command: World

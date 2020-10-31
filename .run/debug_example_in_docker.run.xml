@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="debug_example_in_docker" type="GoRemoteDebugConfigurationType" factoryName="Go Remote" port="40000">
+    <method v="2" />
+  </configuration>
+</component>

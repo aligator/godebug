@@ -1,4 +1,4 @@
-FROM golang:1.12.7-alpine3.10
+FROM golang:1.15.3-alpine3.12
 ENV CGO_ENABLED 0
 
 RUN apk update && apk add bash inotify-tools git
@@ -9,8 +9,9 @@ WORKDIR /build/
 # installing Delve debugger
 RUN go get github.com/derekparker/delve/cmd/dlv
 
-# build micro-service binary
-COPY main.go /build/main.go
-COPY startScript.sh /build/startScript.sh
+COPY startScript.sh /usr/bin/startScript.sh
+RUN chmod +x /usr/bin/startScript.sh
 
-ENTRYPOINT sh startScript.sh
+EXPOSE 40000
+
+ENTRYPOINT ["startScript.sh"]
